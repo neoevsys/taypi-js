@@ -11,13 +11,13 @@ Acepta pagos con Yape, Plin y cualquier app bancaria conectada a la CCE.
 ## Instalación
 
 ```bash
-npm install taypi
+npm install taypi.pe
 ```
 
 ## Uso rápido
 
 ```typescript
-import { Taypi } from 'taypi';
+import { Taypi } from 'taypi.pe';
 
 const taypi = new Taypi(
     'taypi_pk_test_...',  // Public key
@@ -39,7 +39,7 @@ console.log(session.checkout_token);
 **`app/api/checkout/route.ts`** — Backend (servidor)
 
 ```typescript
-import { Taypi } from 'taypi';
+import { Taypi } from 'taypi.pe';
 import { NextResponse } from 'next/server';
 
 const taypi = new Taypi(
@@ -186,7 +186,7 @@ await taypi.createCheckoutSession(params, 'ORD-12345');
 ## Manejo de errores
 
 ```typescript
-import { Taypi, TaypiError } from 'taypi';
+import { Taypi, TaypiError } from 'taypi.pe';
 
 try {
     const session = await taypi.createCheckoutSession(params, reference);

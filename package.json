@@ -1,5 +1,5 @@
 {
-    "name": "taypi",
+    "name": "taypi.pe",
     "version": "1.0.0",
     "description": "SDK oficial de TAYPI — Pagos QR interoperables para e-commerce en Perú",
     "main": "dist/index.js",
