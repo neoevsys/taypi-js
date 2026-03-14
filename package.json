@@ -1,0 +1,40 @@
+{
+    "name": "taypi",
+    "version": "1.0.0",
+    "description": "SDK oficial de TAYPI — Pagos QR interoperables para e-commerce en Perú",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "taypi",
+        "pagos",
+        "qr",
+        "peru",
+        "yape",
+        "plin",
+        "pasarela",
+        "checkout",
+        "payments"
+    ],
+    "author": "NEO TECHNOLOGY PERÚ E.I.R.L. <soporte@neotecperu.com>",
+    "license": "MIT",
+    "homepage": "https://taypi.pe",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/neoevsys/taypi-js.git"
+    },
+    "engines": {
+        "node": ">=16"
+    },
+    "devDependencies": {
+        "@types/node": "^25.5.0",
+        "typescript": "^5.0.0"
+    }
+}
