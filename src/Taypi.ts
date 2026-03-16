@@ -36,7 +36,6 @@ const VERSION = '1.0.0';
 
 const ENVIRONMENTS = [
     'https://app.taypi.pe',
-    'https://dev.taypi.pe',
     'https://sandbox.taypi.pe',
 ];
 
@@ -55,7 +54,7 @@ export class Taypi {
             const url = options.baseUrl.replace(/\/+$/, '').replace(/\/v1$/, '');
             if (!ENVIRONMENTS.includes(url)) {
                 throw new TaypiError(
-                    'URL no permitida. Usa: app.taypi.pe, dev.taypi.pe o sandbox.taypi.pe',
+                    'URL no permitida. Usa: app.taypi.pe o sandbox.taypi.pe',
                     'INVALID_BASE_URL',
                 );
             }

@@ -20,7 +20,7 @@ import { NextResponse } from 'next/server';
 const taypi = new Taypi(
     process.env.TAYPI_PUBLIC_KEY!,
     process.env.TAYPI_SECRET_KEY!,
-    { baseUrl: process.env.TAYPI_BASE_URL }, // https://dev.taypi.pe
+    { baseUrl: process.env.TAYPI_BASE_URL }, // https://sandbox.taypi.pe
 );
 
 export async function POST(request: Request) {

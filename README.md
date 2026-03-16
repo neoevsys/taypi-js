@@ -164,10 +164,7 @@ app.post('/webhooks/taypi', express.raw({ type: 'application/json' }), (req, res
 // Producción (default)
 const taypi = new Taypi('pk', 'sk');
 
-// Desarrollo
-const taypi = new Taypi('pk', 'sk', { baseUrl: 'https://dev.taypi.pe' });
-
-// Sandbox
+// Sandbox (pruebas)
 const taypi = new Taypi('pk', 'sk', { baseUrl: 'https://sandbox.taypi.pe' });
 ```
 

@@ -13,7 +13,7 @@ import { Taypi, TaypiError } from 'taypi';
 const taypi = new Taypi(
     'taypi_pk_test_TU_PUBLIC_KEY',
     'taypi_sk_test_TU_SECRET_KEY',
-    { baseUrl: 'https://dev.taypi.pe' },
+    { baseUrl: 'https://sandbox.taypi.pe' },
 );
 
 async function main() {
