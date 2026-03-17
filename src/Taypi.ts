@@ -41,11 +41,30 @@ const ENVIRONMENTS = [
 
 export class Taypi {
     public readonly publicKey: string;
+    /** Indica si el cliente está en modo sandbox (true) o producción (false). */
+    public readonly isSandbox: boolean;
     private readonly secretKey: string;
     private readonly baseUrl: string;
     private readonly timeout: number;
 
     constructor(publicKey: string, secretKey: string, options: TaypiOptions = {}) {
+        // ── Validar formato de API keys ──
+        Taypi.validateKeyFormat(publicKey, 'publicKey', 'taypi_pk_', 32);
+        Taypi.validateKeyFormat(secretKey, 'secretKey', 'taypi_sk_', 64);
+
+        const publicIsTest = publicKey.startsWith('taypi_pk_test_');
+        const secretIsTest = secretKey.startsWith('taypi_sk_test_');
+
+        if (publicIsTest !== secretIsTest) {
+            throw new TaypiError(
+                'Las keys no coinciden: una es de test y otra de producción. '
+                + 'Ambas deben ser del mismo ambiente (taypi_pk_test_ + taypi_sk_test_ o taypi_pk_live_ + taypi_sk_live_).',
+                'KEY_ENVIRONMENT_MISMATCH',
+            );
+        }
+
+        const isTestMode = publicIsTest;
+
         this.publicKey = publicKey;
         this.secretKey = secretKey;
         this.timeout = options.timeout ?? 15;
@@ -54,13 +73,60 @@ export class Taypi {
             const url = options.baseUrl.replace(/\/+$/, '').replace(/\/v1$/, '');
             if (!ENVIRONMENTS.includes(url)) {
                 throw new TaypiError(
-                    'URL no permitida. Usa: app.taypi.pe o sandbox.taypi.pe',
+                    'URL no permitida. Usa: https://app.taypi.pe (producción) o https://sandbox.taypi.pe (sandbox).',
                     'INVALID_BASE_URL',
                 );
             }
+
+            // ── Validar consistencia key ↔ ambiente ──
+            const urlIsSandbox = url === ENVIRONMENTS[1];
+            if (isTestMode && !urlIsSandbox) {
+                throw new TaypiError(
+                    'Keys de test (taypi_pk_test_) solo funcionan con sandbox. '
+                    + 'Usa baseUrl: "https://sandbox.taypi.pe" o cambia a keys de producción (taypi_pk_live_).',
+                    'KEY_URL_MISMATCH',
+                );
+            }
+            if (!isTestMode && urlIsSandbox) {
+                throw new TaypiError(
+                    'Keys de producción (taypi_pk_live_) solo funcionan con producción. '
+                    + 'Usa baseUrl: "https://app.taypi.pe" o cambia a keys de test (taypi_pk_test_).',
+                    'KEY_URL_MISMATCH',
+                );
+            }
+
             this.baseUrl = url;
         } else {
-            this.baseUrl = ENVIRONMENTS[0];
+            // ── Auto-detectar ambiente desde el key ──
+            this.baseUrl = isTestMode ? ENVIRONMENTS[1] : ENVIRONMENTS[0];
+        }
+
+        this.isSandbox = isTestMode;
+    }
+
+    private static validateKeyFormat(key: string, paramName: string, expectedPrefix: string, expectedTokenLength: number): void {
+        if (!key || !key.startsWith(expectedPrefix)) {
+            throw new TaypiError(
+                `Formato de ${paramName} inválido. Debe iniciar con "${expectedPrefix}live_" o "${expectedPrefix}test_". Recibido: "${key?.substring(0, 20)}..."`,
+                'INVALID_KEY_FORMAT',
+            );
+        }
+
+        const afterPrefix = key.substring(expectedPrefix.length);
+        if (!afterPrefix.startsWith('live_') && !afterPrefix.startsWith('test_')) {
+            throw new TaypiError(
+                `Formato de ${paramName} inválido. Después de "${expectedPrefix}" debe seguir "live_" o "test_".`,
+                'INVALID_KEY_FORMAT',
+            );
+        }
+
+        const fullPrefix = expectedPrefix + (afterPrefix.startsWith('live_') ? 'live_' : 'test_');
+        const token = key.substring(fullPrefix.length);
+        if (token.length !== expectedTokenLength) {
+            throw new TaypiError(
+                `Longitud de ${paramName} inválida. Se esperan ${expectedTokenLength} caracteres después de "${fullPrefix}", se recibieron ${token.length}.`,
+                'INVALID_KEY_FORMAT',
+            );
         }
     }
 
