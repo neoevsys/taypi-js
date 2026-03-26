@@ -208,23 +208,27 @@ export class Taypi {
             const body = params ? JSON.stringify(params) : '';
             const timestamp = Math.floor(Date.now() / 1000).toString();
 
-            // Firma HMAC-SHA256
-            const signaturePath = new URL(path, this.baseUrl).pathname;
-            const message = `${timestamp}\n${method}\n${signaturePath}\n${body}`;
-            const signature = createHmac('sha256', this.secretKey).update(message).digest('hex');
-
             const url = new URL(path, this.baseUrl);
             const isHttps = url.protocol === 'https:';
             const transport = isHttps ? https : http;
+
+            // GET /v1/checkout/sessions/{token} no requiere firma HMAC (solo Bearer)
+            const skipSignature = method === 'GET' && path.includes('/checkout/sessions/');
 
             const headers: Record<string, string> = {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${this.publicKey}`,
-                'Taypi-Signature': signature,
-                'Taypi-Timestamp': timestamp,
                 'User-Agent': `taypi-js/${VERSION}`,
             };
+
+            if (!skipSignature) {
+                const signaturePath = url.pathname;
+                const message = `${timestamp}\n${method}\n${signaturePath}\n${body}`;
+                const signature = createHmac('sha256', this.secretKey).update(message).digest('hex');
+                headers['Taypi-Signature'] = signature;
+                headers['Taypi-Timestamp'] = timestamp;
+            }
 
             if (idempotencyKey) {
                 headers['Idempotency-Key'] = idempotencyKey;
