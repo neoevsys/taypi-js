@@ -140,6 +140,32 @@ export class Taypi {
         return response.data as { checkout_token: string };
     }
 
+    /**
+     * Obtiene los datos de una sesión de checkout (QR, monto, estado, comercio).
+     * Usar después de createCheckoutSession() para mostrar el QR.
+     *
+     * Este endpoint NO requiere firma HMAC (solo Bearer + token opaco), pensado
+     * para checkout.js corriendo en el frontend.
+     */
+    async getCheckoutSession(checkoutToken: string): Promise<Record<string, unknown>> {
+        const response = await this.get(`/v1/checkout/sessions/${checkoutToken}`);
+        return response.data as Record<string, unknown>;
+    }
+
+    // ─── Comercio ────────────────────────────────────────────
+
+    /** Devuelve datos del comercio autenticado. */
+    async getMerchant(): Promise<Record<string, unknown>> {
+        const response = await this.get('/api/v1/merchant');
+        return response.data as Record<string, unknown>;
+    }
+
+    /** Lista las tiendas activas del comercio autenticado. */
+    async listStores(): Promise<Record<string, unknown>[]> {
+        const response = await this.get('/api/v1/stores');
+        return response.data as Record<string, unknown>[];
+    }
+
     // ─── Payments ────────────────────────────────────────────
 
     async createPayment(

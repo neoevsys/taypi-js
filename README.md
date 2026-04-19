@@ -139,6 +139,28 @@ const result = await taypi.listPayments({
 const cancelled = await taypi.cancelPayment('uuid-del-pago', 'cancel-ORD-789');
 ```
 
+### Comercio y tiendas
+
+```typescript
+// Datos del comercio autenticado
+const merchant = await taypi.getMerchant();
+console.log(merchant.business_name);
+console.log(`${merchant.monthly_volume_used} / ${merchant.monthly_volume_limit}`);
+
+// Listar tiendas activas del comercio
+const stores = await taypi.listStores();
+stores.forEach(store => console.log(store.name, store.merchant_code));
+```
+
+### Detalle de una sesión de checkout
+
+```typescript
+// Después de createCheckoutSession, lee los datos completos (QR, monto, status)
+const session = await taypi.createCheckoutSession({ amount: '50.00', reference: 'ORD-1' }, 'ORD-1');
+const details = await taypi.getCheckoutSession(session.checkout_token);
+// details.qr_image, details.merchant_name, details.status...
+```
+
 ### Webhooks
 
 ```typescript
